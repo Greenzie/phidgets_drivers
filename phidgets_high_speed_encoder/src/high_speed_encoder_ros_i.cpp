@@ -174,7 +174,6 @@ void HighSpeedEncoderRosI::publishLatest(int channel)
             absolute_position * enc_data_to_pub_[i].joint_tick2rad;
         js_msg.velocity[i] = enc_data_to_pub_[i].instantaneous_speed *
                              enc_data_to_pub_[i].joint_tick2rad;
-        enc_data_to_pub_[i].instantaneous_speed = 0.0;  // Reset speed
 
         // Print out the data for this encoder
         ROS_INFO("Encoder %lu: %s: %f rad, %f rad/s", i,
@@ -183,6 +182,9 @@ void HighSpeedEncoderRosI::publishLatest(int channel)
 
         std::cout << "Instantaneous speed of channel " << i << ": " << enc_data_to_pub_[i].instantaneous_speed
                   << " Tick to rad: " << enc_data_to_pub_[i].joint_tick2rad << std::endl;
+
+        enc_data_to_pub_[i].instantaneous_speed = 0.0;  // Reset speed
+
 
         if (speed_filter_samples_len_ > 0)
         {
@@ -242,8 +244,8 @@ void HighSpeedEncoderRosI::positionChangeHandler(int channel,
     if (static_cast<int>(enc_data_to_pub_.size()) > channel)
     {
         std::lock_guard<std::mutex> lock(encoder_mutex_);
-
-        double instantaneous_speed = position_change / (time * 1e-6);
+        std::cout << "Position change handler: " << channel << " " << position_change << " " << time << std::endl;
+        double instantaneous_speed = position_change / (time * 1e-3);
         enc_data_to_pub_[channel].instantaneous_speed = instantaneous_speed;
         enc_data_to_pub_[channel].speeds_buffer.push_back(instantaneous_speed);
         enc_data_to_pub_[channel].speed_buffer_updated = true;
