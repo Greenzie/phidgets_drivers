@@ -148,29 +148,38 @@ HighSpeedEncoderRosI::HighSpeedEncoderRosI(ros::NodeHandle nh,
 
 void HighSpeedEncoderRosI::publishLatest(int channel)
 {
-    int64_t absolute_position = encs_->getPosition(channel);
-
+    // Build the JointState message
     sensor_msgs::JointState js_msg;
     js_msg.header.stamp = ros::Time::now();
     js_msg.header.frame_id = frame_id_;
 
-    js_msg.name.resize(enc_data_to_pub_.size());
-    for (size_t i = 0; i < enc_data_to_pub_.size(); ++i)
+    // Resize for the number of encoders
+    size_t num_encoders = enc_data_to_pub_.size();
+    js_msg.name.resize(num_encoders);
+    js_msg.position.resize(num_encoders);
+    js_msg.velocity.resize(num_encoders);
+    js_msg.effort.clear();
+
+    // Add joint names for all encoders
+    for (size_t i = 0; i < num_encoders; ++i)
     {
         js_msg.name[i] = enc_data_to_pub_[i].joint_name;
     }
 
-    js_msg.position.resize(enc_data_to_pub_.size());
-    js_msg.velocity.resize(enc_data_to_pub_.size());
-    js_msg.effort.clear();
-
-    for (size_t i = 0; i < enc_data_to_pub_.size(); ++i)
+    // Add the latest position anb velocity
+    for (size_t i = 0; i < num_encoders; ++i)
     {
+        int64_t absolute_position = encs_->getPosition(i);
         js_msg.position[i] =
             absolute_position * enc_data_to_pub_[i].joint_tick2rad;
         js_msg.velocity[i] = enc_data_to_pub_[i].instantaneous_speed *
                              enc_data_to_pub_[i].joint_tick2rad;
         enc_data_to_pub_[i].instantaneous_speed = 0.0;  // Reset speed
+
+        // Print out the data for this encoder
+        ROS_INFO("Encoder %lu: %s: %f rad, %f rad/s", i,
+                  js_msg.name[i].c_str(),
+                  js_msg.position[i], js_msg.velocity[i]);
 
         if (speed_filter_samples_len_ > 0)
         {
@@ -214,11 +223,12 @@ void HighSpeedEncoderRosI::publishLatest(int channel)
 
 void HighSpeedEncoderRosI::timerCallback(const ros::TimerEvent& /* event */)
 {
-    std::lock_guard<std::mutex> lock(encoder_mutex_);
-    for (int i = 0; i < static_cast<int>(enc_data_to_pub_.size()); ++i)
-    {
-        publishLatest(i);
-    }
+    // std::lock_guard<std::mutex> lock(encoder_mutex_);
+    // for (int i = 0; i < static_cast<int>(enc_data_to_pub_.size()); ++i)
+    // {
+    //     publishLatest(i);
+    // }
+    publishLatest(-1);
 }
 
 void HighSpeedEncoderRosI::positionChangeHandler(int channel,
