@@ -181,6 +181,9 @@ void HighSpeedEncoderRosI::publishLatest(int channel)
                   js_msg.name[i].c_str(),
                   js_msg.position[i], js_msg.velocity[i]);
 
+        std::cout << "Instantaneous speed of channel " << i << ": " << enc_data_to_pub_[i].instantaneous_speed
+                  << " Tick to rad: " << enc_data_to_pub_[i].joint_tick2rad << std::endl;
+
         if (speed_filter_samples_len_ > 0)
         {
             if (!enc_data_to_pub_[i].speed_buffer_updated)
