@@ -147,12 +147,12 @@ HighSpeedEncoderRosI::HighSpeedEncoderRosI(ros::NodeHandle nh,
         // once at the beginning to make sure there is *some* data.
         for (int i = 0; i < n_encs; ++i)
         {
-            publishLatest(i);
+            publishLatest();
         }
     }
 }
 
-void HighSpeedEncoderRosI::publishLatest(int channel)
+void HighSpeedEncoderRosI::publishLatest()
 {
     // Build the JointState message
     sensor_msgs::JointState js_msg;
@@ -189,6 +189,11 @@ void HighSpeedEncoderRosI::publishLatest(int channel)
         std::cout << "Instantaneous speed of channel " << i << ": " << enc_data_to_pub_[i].instantaneous_speed
                   << " Tick to rad: " << enc_data_to_pub_[i].joint_tick2rad << std::endl;
 
+        // I don't understand this line at all. The best I can guess is that it will set the speed back to 0
+        // if publishLatest() is called twice before positionChangeHandler() (which is a data update from the encoder)
+        // is called. So this could theoretically allow someone to tell that the data in a JointState message is
+        // stale/repeated. It still wouldn't be very reliable though, since 0.0 is a valid speed if the encoder
+        // has recorded no ticks since the last update.
         enc_data_to_pub_[i].instantaneous_speed = 0.0;  // Reset speed
 
 
@@ -234,12 +239,7 @@ void HighSpeedEncoderRosI::publishLatest(int channel)
 
 void HighSpeedEncoderRosI::timerCallback(const ros::TimerEvent& /* event */)
 {
-    // std::lock_guard<std::mutex> lock(encoder_mutex_);
-    // for (int i = 0; i < static_cast<int>(enc_data_to_pub_.size()); ++i)
-    // {
-    //     publishLatest(i);
-    // }
-    publishLatest(-1);
+    publishLatest();
 }
 
 void HighSpeedEncoderRosI::positionChangeHandler(int channel,
@@ -259,7 +259,7 @@ void HighSpeedEncoderRosI::positionChangeHandler(int channel,
 
         if (publish_rate_ <= 0)
         {
-            publishLatest(channel);
+            publishLatest();
         }
     }
 }

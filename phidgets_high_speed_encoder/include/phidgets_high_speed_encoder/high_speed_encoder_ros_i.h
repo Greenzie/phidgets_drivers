@@ -76,7 +76,7 @@ class HighSpeedEncoderRosI final
     ros::Timer timer_;
     int publish_rate_;
 
-    void publishLatest(int channel);
+    void publishLatest();
 
     void positionChangeHandler(int channel, int position_change, double time,
                                int index_triggered);
