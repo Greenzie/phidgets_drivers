@@ -79,6 +79,9 @@ class Encoder final
     void positionChangeHandler(int position_change, double time,
                                int index_triggered);
 
+
+    void setDataInterval(uint32_t data_interval_ms) const;
+
   private:
     int channel_;
     std::function<void(int, int, double, int)> position_change_handler_;

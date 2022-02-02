@@ -112,4 +112,9 @@ void Encoders::setEnabled(int index, bool enabled) const
     return encs_.at(index)->setEnabled(enabled);
 }
 
+void Encoders::setDataInterval(int index, uint32_t data_interval_ms) const
+{
+    encs_.at(index)->setDataInterval(data_interval_ms);
+}
+
 }  // namespace phidgets

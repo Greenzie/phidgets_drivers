@@ -82,6 +82,8 @@ class Encoders final
      * @param enabled The new powered state of the encoder*/
     void setEnabled(int index, bool enabled) const;
 
+    void setDataInterval(int index, uint32_t data_interval_ms) const;
+
   private:
     uint32_t encoder_count_;
     std::vector<std::unique_ptr<Encoder>> encs_;

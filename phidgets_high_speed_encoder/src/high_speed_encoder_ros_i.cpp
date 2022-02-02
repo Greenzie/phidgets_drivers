@@ -74,6 +74,11 @@ HighSpeedEncoderRosI::HighSpeedEncoderRosI(ros::NodeHandle nh,
     {
         publish_rate_ = 0;
     }
+    int data_interval_ms;
+    if (!nh_private.getParam("data_interval_ms", data_interval_ms))
+    {
+        data_interval_ms = 8;
+    }
 
     ROS_INFO("Connecting to Phidgets Encoders serial %d, hub port %d ...",
              serial_num, hub_port);
@@ -119,6 +124,7 @@ HighSpeedEncoderRosI::HighSpeedEncoderRosI(ros::NodeHandle nh,
                      buf);
             enc_data_to_pub_[i].encoder_decimspeed_pub =
                 nh_.advertise<phidgets_msgs::EncoderDecimatedSpeed>(buf, 10);
+            encs_->setDataInterval(i, data_interval_ms);
             encs_->setEnabled(i, true);
         }
     } catch (const Phidget22Error& err)

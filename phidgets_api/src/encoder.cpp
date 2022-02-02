@@ -153,4 +153,16 @@ void Encoder::PositionChangeHandler(PhidgetEncoderHandle /* phid */, void *ctx,
         ->positionChangeHandler(position_change, time, index_triggered);
 }
 
+void Encoder::setDataInterval(uint32_t data_interval_ms) const
+{
+    PhidgetReturnCode ret =
+        PhidgetEncoder_setDataInterval(encoder_handle_, data_interval_ms);
+    if (ret != EPHIDGET_OK)
+    {
+        throw Phidget22Error("Failed to set data interval for Encoder channel " +
+                                 std::to_string(channel_),
+                             ret);
+    }
+}
+
 }  // namespace phidgets
