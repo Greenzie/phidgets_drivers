@@ -255,7 +255,7 @@ void HighSpeedEncoderRosI::positionChangeHandler(int channel,
         enc_data_to_pub_[channel].speeds_buffer.push_back(instantaneous_speed);
         enc_data_to_pub_[channel].speed_buffer_updated = true;
         enc_data_to_pub_[channel].loops_without_update_speed_buffer = 0;
-        enc_data_to_pub_[channel].last_update_time = ros::Time::now();
+        enc_data_to_pub_[channel].update_time = ros::Time::now();
 
         if (publish_rate_ <= 0)
         {
