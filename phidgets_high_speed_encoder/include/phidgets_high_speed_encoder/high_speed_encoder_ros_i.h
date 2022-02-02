@@ -49,6 +49,7 @@ struct EncoderDataToPub {
     std::string joint_name;
     double joint_tick2rad;
     ros::Publisher encoder_decimspeed_pub;
+    ros::Time update_time;
 };
 
 class HighSpeedEncoderRosI final

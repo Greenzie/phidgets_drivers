@@ -181,14 +181,6 @@ void HighSpeedEncoderRosI::publishLatest()
         js_msg.velocity[i] = enc_data_to_pub_[i].instantaneous_speed *
                              enc_data_to_pub_[i].joint_tick2rad;
 
-        // Print out the data for this encoder
-        ROS_INFO("Encoder %lu: %s: %f rad, %f rad/s", i,
-                  js_msg.name[i].c_str(),
-                  js_msg.position[i], js_msg.velocity[i]);
-
-        std::cout << "Instantaneous speed of channel " << i << ": " << enc_data_to_pub_[i].instantaneous_speed
-                  << " Tick to rad: " << enc_data_to_pub_[i].joint_tick2rad << std::endl;
-
         // I don't understand this line at all. The best I can guess is that it will set the speed back to 0
         // if publishLatest() is called twice before positionChangeHandler() (which is a data update from the encoder)
         // is called. So this could theoretically allow someone to tell that the data in a JointState message is
@@ -196,6 +188,14 @@ void HighSpeedEncoderRosI::publishLatest()
         // has recorded no ticks since the last update.
         enc_data_to_pub_[i].instantaneous_speed = 0.0;  // Reset speed
 
+        // Update the timestamp of the JointState message to be the oldest
+        // timestamp of all data updates. In practice, all data updates should
+        // be within a microseconds of each other, so this should be
+        // sufficient.
+        if (enc_data_to_pub_[i].update_time < js_msg.header.stamp)
+        {
+            js_msg.header.stamp = enc_data_to_pub_[i].update_time;
+        }
 
         if (speed_filter_samples_len_ > 0)
         {
@@ -250,12 +250,12 @@ void HighSpeedEncoderRosI::positionChangeHandler(int channel,
     if (static_cast<int>(enc_data_to_pub_.size()) > channel)
     {
         std::lock_guard<std::mutex> lock(encoder_mutex_);
-        std::cout << "Position change handler: " << channel << " " << position_change << " " << time << std::endl;
         double instantaneous_speed = position_change / (time * 1e-3);
         enc_data_to_pub_[channel].instantaneous_speed = instantaneous_speed;
         enc_data_to_pub_[channel].speeds_buffer.push_back(instantaneous_speed);
         enc_data_to_pub_[channel].speed_buffer_updated = true;
         enc_data_to_pub_[channel].loops_without_update_speed_buffer = 0;
+        enc_data_to_pub_[channel].last_update_time = ros::Time::now();
 
         if (publish_rate_ <= 0)
         {
