@@ -1,0 +1,28 @@
+Source: ros-noetic-phidgets-high-speed-encoder
+Section: misc
+Priority: optional
+Maintainer: Martin Günther <martin.guenther@dfki.de>
+Build-Depends: debhelper (>= 9.0.0),
+    ros-noetic-catkin,
+    ros-noetic-nodelet,
+    ros-noetic-phidgets-api (=1.0.4-0-greenzie-focal1),
+    ros-noetic-phidgets-msgs,
+    ros-noetic-pluginlib,
+    ros-noetic-roscpp,
+    ros-noetic-roslaunch,
+    ros-noetic-sensor-msgs
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-noetic-phidgets-high-speed-encoder
+Architecture: any
+Depends: ${shlibs:Depends},
+    ${misc:Depends},
+    ros-noetic-nodelet,
+    ros-noetic-phidgets-api (=1.0.4-0-greenzie-focal1),
+    ros-noetic-phidgets-msgs,
+    ros-noetic-pluginlib,
+    ros-noetic-roscpp,
+    ros-noetic-roslaunch,
+    ros-noetic-sensor-msgs
+Description: Driver for the Phidgets high speed encoder devices
