@@ -236,7 +236,7 @@ void HighSpeedEncoderRosI::publishLatest()
 
 void HighSpeedEncoderRosI::timerCallback(const ros::TimerEvent& /* event */)
 {
-    std::lock_guard<std::mutex> lock(encoder_mutex_);
+    // std::lock_guard<std::mutex> lock(encoder_mutex_);
     publishLatest();
 }
 
