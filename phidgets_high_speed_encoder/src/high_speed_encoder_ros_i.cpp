@@ -145,10 +145,7 @@ HighSpeedEncoderRosI::HighSpeedEncoderRosI(ros::NodeHandle nh,
         // will only publish when something changes (where "changes" is defined
         // by the libphidget22 library).  In that case, make sure to publish
         // once at the beginning to make sure there is *some* data.
-        for (int i = 0; i < n_encs; ++i)
-        {
-            publishLatest();
-        }
+        publishLatest();
     }
 }
 
@@ -239,6 +236,7 @@ void HighSpeedEncoderRosI::publishLatest()
 
 void HighSpeedEncoderRosI::timerCallback(const ros::TimerEvent& /* event */)
 {
+    std::lock_guard<std::mutex> lock(encoder_mutex_);
     publishLatest();
 }
 
