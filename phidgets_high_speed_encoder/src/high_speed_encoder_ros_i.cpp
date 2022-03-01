@@ -247,6 +247,11 @@ void HighSpeedEncoderRosI::positionChangeHandler(int channel,
 {
     if (static_cast<int>(enc_data_to_pub_.size()) > channel)
     {
+        if (channel > 1)
+        {
+            ROS_INFO("Phidgets channel greater than 1: %d", channel);
+        }
+
         std::lock_guard<std::mutex> lock(encoder_mutex_);
         double instantaneous_speed = position_change / (time * 1e-3);
         enc_data_to_pub_[channel].instantaneous_speed = instantaneous_speed;
