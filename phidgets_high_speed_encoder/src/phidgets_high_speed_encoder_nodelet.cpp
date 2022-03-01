@@ -43,7 +43,7 @@ PLUGINLIB_EXPORT_CLASS(PhidgetsHighSpeedEncoderNodelet, nodelet::Nodelet)
 
 void PhidgetsHighSpeedEncoderNodelet::onInit()
 {
-    NODELET_INFO("Initializing Phidgets High Speed Encoder Nodelet");
+    NODELET_INFO("Initializing Phidgets High Speed Encoder Nodelet: added mutex lock");
 
     // TODO: Do we want the single threaded or multithreaded NH?
     ros::NodeHandle nh = getMTNodeHandle();
