@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  greenzie: greenzie/build_and_publish_debs@0.0.2
+  greenzie: greenzie/build_and_publish_debs@volatile
 
 workflows:
   version: 2
@@ -14,8 +14,9 @@ workflows:
           executor: greenzie/debianize_amd64
 
       # Deployment jobs
-      - greenzie/deploy:
+      - greenzie/debian_deploy_experimental:
           name: "deploy_amd64_greenzie"
+          context: GREENZIE
           filters:
             branches:
               only:
