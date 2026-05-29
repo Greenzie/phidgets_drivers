@@ -1,25 +1,35 @@
 version: 2.1
 
 orbs:
-  greenzie: greenzie/build_and_publish_debs@volatile
+  greenzie: greenzie/build_and_publish_debs@0.1.1
+
+parameters:
+  manual-deploy:
+    type: boolean
+    default: false
 
 workflows:
   version: 2
   pushbuild:
+    unless: << pipeline.parameters.manual-deploy >>
     jobs:
-      # Build jobs
       - greenzie/debian_build:
           name: "amd_debian_build"
+          context: GREENZIE
           platform: amd64
           executor: greenzie/debianize_amd64
 
-      # Deployment jobs
-      - greenzie/debian_deploy_experimental:
-          name: "deploy_amd64_greenzie"
+  manualdeploy:
+    when: << pipeline.parameters.manual-deploy >>
+    jobs:
+      - greenzie/debian_build:
+          name: "amd_debian_build"
           context: GREENZIE
-          filters:
-            branches:
-              only:
-                - noetic
+          platform: amd64
+          executor: greenzie/debianize_amd64
+
+      - greenzie/debian_deploy_experimental:
+          name: "deploy_all_greenzie"
+          context: GREENZIE
           requires:
             - amd_debian_build
