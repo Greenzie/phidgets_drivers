@@ -13,22 +13,20 @@ workflows:
   pushbuild:
     unless: << pipeline.parameters.manual-deploy >>
     jobs:
-      - greenzie/debian_build_simple:
+      - greenzie/debian_build:
           name: "amd_debian_build"
           context: GREENZIE
           platform: amd64
           executor: greenzie/debianize_amd64
-          generate_changelog: true
 
   manualdeploy:
     when: << pipeline.parameters.manual-deploy >>
     jobs:
-      - greenzie/debian_build_simple:
+      - greenzie/debian_build:
           name: "amd_debian_build"
           context: GREENZIE
           platform: amd64
           executor: greenzie/debianize_amd64
-          generate_changelog: true
 
       - greenzie/debian_deploy_experimental:
           name: "deploy_all_greenzie"
