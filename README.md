@@ -1,3 +1,5 @@
+> **DEPRECATED:** This fork is no longer actively maintained by Greenzie.
+
 Phidgets drivers for ROS
 ========================
 
